@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" href="{% url 'newspaper:index' %}">🗞 NewsAgency</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"
+             href="{% url 'newspaper:index' %}">Home</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#">Topics</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Newspapers</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Redactors</a></li>
+      </ul>
+      <div class="navbar-nav">
+        {% if user.is_authenticated %}
+          <span class="navbar-text me-3">User: <strong>{{ user.username }}</strong></span>
+          <form action="#" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+          </form>
+        {% else %}
+          <a class="btn btn-primary btn-sm" href="#">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
