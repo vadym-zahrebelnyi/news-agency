@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.views import generic
 from django.urls import reverse_lazy
 
-from .models import Topic, Redactor, Article
+from .models import Topic, Article
 
 from .forms import (
     TopicSearchForm,
@@ -10,7 +12,9 @@ from .forms import (
 )
 
 
-class IndexView(generic.TemplateView):
+Redactor = get_user_model()
+
+class IndexView(LoginRequiredMixin, generic.TemplateView):
     template_name = "newspaper/index.html"
 
     def get_context_data(self, **kwargs):
@@ -36,7 +40,7 @@ class IndexView(generic.TemplateView):
         return context
 
 
-class TopicListView(generic.ListView):
+class TopicListView(LoginRequiredMixin, generic.ListView):
     model = Topic
     paginate_by = 5
 
@@ -60,24 +64,24 @@ class TopicListView(generic.ListView):
         return context
 
 
-class TopicCreateView(generic.CreateView):
+class TopicCreateView(LoginRequiredMixin, generic.CreateView):
     model = Topic
     fields = "__all__"
     success_url = reverse_lazy("newspaper:topic-list")
 
 
-class TopicUpdateView(generic.UpdateView):
+class TopicUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Topic
     fields = "__all__"
     success_url = reverse_lazy("newspaper:topic-list")
 
 
-class TopicDeleteView(generic.DeleteView):
+class TopicDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Topic
     success_url = reverse_lazy("newspaper:topic-list")
 
 
-class RedactorListView(generic.ListView):
+class RedactorListView(LoginRequiredMixin, generic.ListView):
     model = Redactor
     paginate_by = 5
 
@@ -96,6 +100,6 @@ class RedactorListView(generic.ListView):
         return context
 
 
-class RedactorDetailView(generic.DetailView):
+class RedactorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Redactor
     queryset = Redactor.objects.prefetch_related("articles__topics")

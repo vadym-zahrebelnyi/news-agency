@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <div class="row justify-content-center py-5">
+    <div class="col-md-5 col-lg-4">
+      <div class="card shadow border-0">
+        <div class="card-body p-4">
+          <h2 class="text-center fw-bold mb-4">Login</h2>
+
+          <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">Sign In</button>
+              <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <p class="small text-muted">Don't have an account? Contact admin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
