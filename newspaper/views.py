@@ -2,7 +2,7 @@ from django.db.models import Count
 from django.views import generic
 from django.urls import reverse_lazy
 
-from .models import Topic, Redactor, Newspaper
+from .models import Topic, Redactor, Article
 
 from .forms import (
     TopicSearchForm
@@ -17,10 +17,10 @@ class IndexView(generic.TemplateView):
 
         context["num_topics"] = Topic.objects.count()
         context["num_redactors"] = Redactor.objects.count()
-        context["num_newspapers"] = Newspaper.objects.count()
+        context["num_articles"] = Article.objects.count()
 
-        context["latest_newspapers"] = (
-            Newspaper.objects
+        context["latest_articles"] = (
+            Article.objects
             .only("title", "published_date")
             .prefetch_related("topics")
             .order_by("-published_date")[:5]
@@ -28,7 +28,7 @@ class IndexView(generic.TemplateView):
         context["top_redactors"] = (
             Redactor.objects
             .only("username", "first_name", "last_name")
-            .annotate(num_papers=Count("newspapers"))
+            .annotate(num_papers=Count("articles"))
             .order_by("-num_papers")[:3]
         )
 

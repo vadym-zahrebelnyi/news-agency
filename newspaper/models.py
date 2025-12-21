@@ -29,14 +29,14 @@ class Redactor(AbstractUser):
         return f"{self.username} ({self.first_name} {self.last_name})"
 
 
-class Newspaper(models.Model):
+class Article(models.Model):
     title = models.CharField(max_length=255, unique=True)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
-    topics = models.ManyToManyField(Topic, related_name="newspapers")
+    topics = models.ManyToManyField(Topic, related_name="articles")
     publishers = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name="newspapers"
+        related_name="articles"
     )
 
     class Meta:
