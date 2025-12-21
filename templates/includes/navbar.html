@@ -14,11 +14,13 @@
           <a class="nav-link" href="{% url 'newspaper:topic-list' %}">Topics</a>
         </li>
         <li class="nav-item"><a class="nav-link" href="#">Articles</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Redactors</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'newspaper:redactor-list' %}">Redactors</a>
+        </li>
       </ul>
       <div class="navbar-nav">
         {% if user.is_authenticated %}
-          <span class="navbar-text me-3">User: <strong>{{ user.username }}</strong></span>
+          <span class="navbar-text me-3">User: <a href="{{ user.get_absolute_url }}"><strong>{{ user.username }}</strong></a></span>
           <form action="#" method="post" class="d-inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>

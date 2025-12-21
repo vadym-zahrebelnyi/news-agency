@@ -5,7 +5,8 @@ from django.urls import reverse_lazy
 from .models import Topic, Redactor, Article
 
 from .forms import (
-    TopicSearchForm
+    TopicSearchForm,
+    RedactorSearchForm
 )
 
 
@@ -75,3 +76,26 @@ class TopicDeleteView(generic.DeleteView):
     model = Topic
     success_url = reverse_lazy("newspaper:topic-list")
 
+
+class RedactorListView(generic.ListView):
+    model = Redactor
+    paginate_by = 5
+
+
+    def get_queryset(self):
+        queryset = Redactor.objects.all()
+        username = self.request.GET.get("username")
+        if username:
+            return queryset.filter(username__icontains=username)
+        return queryset.order_by("username")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        username = self.request.GET.get("username", "")
+        context["search_form"] = RedactorSearchForm(initial={"username": username})
+        return context
+
+
+class RedactorDetailView(generic.DetailView):
+    model = Redactor
+    queryset = Redactor.objects.prefetch_related("articles__topics")
