@@ -10,7 +10,9 @@
           <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"
              href="{% url 'newspaper:index' %}">Home</a>
         </li>
-        <li class="nav-item"><a class="nav-link" href="#">Topics</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'newspaper:topic-list' %}">Topics</a>
+        </li>
         <li class="nav-item"><a class="nav-link" href="#">Newspapers</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Redactors</a></li>
       </ul>

@@ -1,6 +1,13 @@
 from django.db.models import Count
 from django.views import generic
+from django.urls import reverse_lazy
+
 from .models import Topic, Redactor, Newspaper
+
+from .forms import (
+    TopicSearchForm
+)
+
 
 class IndexView(generic.TemplateView):
     template_name = "newspaper/index.html"
@@ -26,3 +33,45 @@ class IndexView(generic.TemplateView):
         )
 
         return context
+
+
+class TopicListView(generic.ListView):
+    model = Topic
+    paginate_by = 5
+
+    def get_queryset(self):
+        queryset = Topic.objects.all()
+        form = TopicSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
+        return queryset
+
+    def get_context_data(
+            self, *, object_list=None, **kwargs
+    ):
+        context = super(TopicListView, self).get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = TopicSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+
+class TopicCreateView(generic.CreateView):
+    model = Topic
+    fields = "__all__"
+    success_url = reverse_lazy("newspaper:topic-list")
+
+
+class TopicUpdateView(generic.UpdateView):
+    model = Topic
+    fields = "__all__"
+    success_url = reverse_lazy("newspaper:topic-list")
+
+
+class TopicDeleteView(generic.DeleteView):
+    model = Topic
+    success_url = reverse_lazy("newspaper:topic-list")
+
