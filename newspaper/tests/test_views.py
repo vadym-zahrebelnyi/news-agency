@@ -47,6 +47,49 @@ class AuthenticatedViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.topic.name)
 
+    def test_topic_create_view(self):
+        """Tests that a new topic can be created."""
+        initial_count = Topic.objects.count()
+        response = self.client.post(reverse("newspaper:topic-create"), data={"name": "New Topic"})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("newspaper:topic-list"))
+        self.assertEqual(Topic.objects.count(), initial_count + 1)
+        self.assertTrue(Topic.objects.filter(name="New Topic").exists())
+
+    def test_topic_update_view(self):
+        """Tests that a topic can be updated."""
+        response = self.client.post(
+            reverse("newspaper:topic-update", kwargs={"pk": self.topic.id}),
+            data={"name": "Updated Technology"}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("newspaper:topic-list"))
+        self.topic.refresh_from_db()
+        self.assertEqual(self.topic.name, "Updated Technology")
+
+    def test_topic_delete_view(self):
+        """Tests that a topic can be deleted."""
+        topic_to_delete = Topic.objects.create(name="Ephemeral Topic")
+        initial_count = Topic.objects.count()
+        response = self.client.post(
+            reverse("newspaper:topic-delete", kwargs={"pk": topic_to_delete.id})
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("newspaper:topic-list"))
+        self.assertEqual(Topic.objects.count(), initial_count - 1)
+        with self.assertRaises(Topic.DoesNotExist):
+            Topic.objects.get(pk=topic_to_delete.id)
+
+    def test_topic_list_view_pagination(self):
+        """Tests that pagination is present on the topic list page."""
+        # Create enough topics to force pagination (paginate_by is 5)
+        for i in range(10):
+            Topic.objects.create(name=f"Topic {i}")
+
+        response = self.client.get(reverse("newspaper:topic-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "page")  # Check for pagination links
+
     def test_article_list_view_search(self):
         """Tests that searching in the article list filters correctly."""
         response = self.client.get(reverse("newspaper:article-list") + "?title=Test")
@@ -82,6 +125,14 @@ class ArticleViewTests(TestCase):
         self.topic = Topic.objects.create(name="Science")
         self.article = Article.objects.create(title="Science Article", content="Content about science")
         self.article.publishers.add(self.publisher_user)
+
+    def test_article_detail_view(self):
+        """Tests that the article detail view loads and displays content."""
+        self.client.force_login(self.publisher_user)
+        response = self.client.get(reverse("newspaper:article-detail", kwargs={"pk": self.article.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.article.title)
+        self.assertContains(response, self.article.content)
 
     def test_create_article_assigns_publisher(self):
         """Tests that the logged-in user is assigned as a publisher on creation."""
@@ -136,3 +187,68 @@ class ArticleViewTests(TestCase):
         response = self.client.post(reverse("newspaper:article-delete", kwargs={"pk": self.article.id}))
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Article.objects.filter(id=self.article.id).exists())
+
+
+class RedactorViewTests(TestCase):
+    def setUp(self):
+        self.user = Redactor.objects.create_user(
+            username="regular.user",
+            password="password123",
+            years_of_experience=2,
+        )
+        self.other_user = Redactor.objects.create_user(
+            username="other.user",
+            password="password123",
+            years_of_experience=5,
+        )
+        self.admin_user = Redactor.objects.create_superuser(
+            username="admin.user", password="password123"
+        )
+        self.client.force_login(self.user)
+
+    def test_redactor_create_view(self):
+        """Tests that a new redactor can be created."""
+        initial_count = Redactor.objects.count()
+        form_data = {
+            "username": "new.redactor",
+            "password1": "S0meC0mplexP@ssword!",
+            "password2": "S0meC0mplexP@ssword!",
+            "years_of_experience": 1,
+        }
+        response = self.client.post(reverse("newspaper:redactor-create"), data=form_data)
+        self.assertRedirects(response, reverse("newspaper:redactor-list"))
+        self.assertEqual(Redactor.objects.count(), initial_count + 1)
+
+    def test_user_can_update_own_experience(self):
+        """Tests that a logged-in user can update their own experience."""
+        form_data = {"years_of_experience": 3}
+        response = self.client.post(
+            reverse("newspaper:redactor-update", kwargs={"pk": self.user.id}),
+            data=form_data
+        )
+        self.assertRedirects(response, self.user.get_absolute_url())
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.years_of_experience, 3)
+
+    def test_user_cannot_update_other_user_experience(self):
+        """Tests that a user cannot update another user's experience."""
+        self.client.force_login(self.user)
+        form_data = {"years_of_experience": 6}
+        response = self.client.post(
+            reverse("newspaper:redactor-update", kwargs={"pk": self.other_user.id}),
+            data=form_data
+        )
+        self.assertEqual(response.status_code, 403) # Forbidden
+
+    def test_admin_can_update_other_user_experience(self):
+        """Tests that a superuser can update another user's experience."""
+        self.client.force_login(self.admin_user)
+        form_data = {"years_of_experience": 7}
+        response = self.client.post(
+            reverse("newspaper:redactor-update", kwargs={"pk": self.other_user.id}),
+            data=form_data
+        )
+        self.assertRedirects(response, self.other_user.get_absolute_url())
+        self.other_user.refresh_from_db()
+        self.assertEqual(self.other_user.years_of_experience, 7)
+
