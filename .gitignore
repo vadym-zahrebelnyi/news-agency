@@ -4,4 +4,3 @@
 *.sqlite3
 .pytest_cache/
 **__pycache__/
-fixture_db_data.json
