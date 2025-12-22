@@ -1,28 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-5 text-center">
-      <div class="card shadow-sm border-0 py-4">
+      <div class="card shadow-sm border-0 py-4 rounded-3">
         <div class="card-body">
-          <div class="position-relative d-inline-block mb-3">
-            <i class="bi bi-person-x text-danger" style="font-size: 4rem;"></i>
-          </div>
-
+          <i class="bi bi-person-x text-danger mb-3" style="font-size: 3.5rem;"></i>
           <h2 class="h4 fw-bold">Delete Redactor?</h2>
           <p class="text-muted px-3">
-            Are you sure you want to delete the account of
-            <strong class="text-dark">@{{ object.username }}</strong>?
-            This action cannot be undone.
+            Are you sure you want to delete account: <strong class="text-dark">@{{ object.username }}</strong>?
           </p>
 
           <form action="" method="post" class="mt-4">
             {% csrf_token %}
             <div class="d-grid gap-2 d-md-flex justify-content-center">
-              <button type="submit" class="btn btn-danger px-4 shadow-sm">
-                <i class="bi bi-trash me-1"></i> Yes, Delete Account
+              <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm fw-bold">
+                Yes, Delete
               </button>
-              <a href="{% url 'newspaper:redactor-detail' pk=object.id %}" class="btn btn-light px-4 border">
+              <a href="{% url 'newspaper:redactor-detail' pk=object.id %}" class="btn btn-light px-4 rounded-pill border">
                 Cancel
               </a>
             </div>
@@ -31,4 +27,5 @@
       </div>
     </div>
   </div>
+</div>
 {% endblock %}
