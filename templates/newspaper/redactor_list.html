@@ -3,7 +3,7 @@
 {% block content %}
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 text-dark fw-bold">Redactors</h1>
-    <a href="#" class="btn btn-primary btn-sm px-3 shadow-sm">
+    <a href="{% url 'newspaper:redactor-create' %}" class="btn btn-primary btn-sm px-3 shadow-sm">
       <i class="bi bi-person-plus"></i> Add Redactor
     </a>
   </div>

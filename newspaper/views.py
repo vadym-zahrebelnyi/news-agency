@@ -8,7 +8,9 @@ from .models import Topic, Article
 
 from .forms import (
     TopicSearchForm,
-    RedactorSearchForm
+    RedactorSearchForm,
+    RedactorCreationForm,
+    RedactorExperienceUpdateForm,
 )
 
 
@@ -85,21 +87,50 @@ class RedactorListView(LoginRequiredMixin, generic.ListView):
     model = Redactor
     paginate_by = 5
 
-
     def get_queryset(self):
         queryset = Redactor.objects.all()
-        username = self.request.GET.get("username")
-        if username:
-            return queryset.filter(username__icontains=username)
-        return queryset.order_by("username")
+        form = RedactorSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                username__icontains=form.cleaned_data["username"]
+            )
+        return queryset
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(
+            self, *, object_list=None, **kwargs
+    ):
+        context = super(RedactorListView, self).get_context_data(**kwargs)
         username = self.request.GET.get("username", "")
-        context["search_form"] = RedactorSearchForm(initial={"username": username})
+        context["search_form"] = RedactorSearchForm(
+            initial={"username": username}
+        )
         return context
 
 
 class RedactorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Redactor
     queryset = Redactor.objects.prefetch_related("articles__topics")
+
+
+class RedactorCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Redactor
+    form_class = RedactorCreationForm
+    template_name = "newspaper/redactor_form.html"
+    # Після створення перекидаємо на список
+    success_url = reverse_lazy("newspaper:redactor-list")
+
+
+class RedactorExperienceUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Redactor
+    form_class = RedactorExperienceUpdateForm
+    template_name = "newspaper/redactor_form.html"
+
+    def get_success_url(self):
+        # Після редагування краще повернути в профіль цього ж юзера
+        return reverse_lazy("newspaper:redactor-detail", kwargs={"pk": self.object.pk})
+
+
+class RedactorDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Redactor
+    template_name = "newspaper/redactor_confirm_delete.html"
+    success_url = reverse_lazy("newspaper:redactor-list")
