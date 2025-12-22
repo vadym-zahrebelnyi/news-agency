@@ -12,6 +12,12 @@ from .views import (
     RedactorCreateView,
     RedactorExperienceUpdateView,
     RedactorDeleteView,
+
+    ArticleListView,
+    ArticleDetailView,
+    ArticleCreateView,
+    ArticleUpdateView,
+    ArticleDeleteView,
 )
 
 
@@ -28,6 +34,12 @@ urlpatterns = [
     path("redactors/create/", RedactorCreateView.as_view(), name="redactor-create"),
     path("redactors/<int:pk>/update/", RedactorExperienceUpdateView.as_view(), name="redactor-update"),
     path("redactors/<int:pk>/delete/", RedactorDeleteView.as_view(), name="redactor-delete"),
+
+    path("articles/", ArticleListView.as_view(), name="article-list"),
+    path("articles/<int:pk>/", ArticleDetailView.as_view(), name="article-detail"),
+    path("articles/create/", ArticleCreateView.as_view(), name="article-create"),
+    path("articles/<int:pk>/update/", ArticleUpdateView.as_view(), name="article-update"),
+    path("articles/<int:pk>/delete/", ArticleDeleteView.as_view(), name="article-delete"),
 ]
 
 app_name = "newspaper"

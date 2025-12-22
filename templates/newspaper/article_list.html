@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold text-dark mb-0">Articles</h1>
+    <a href="{% url 'newspaper:article-create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+      <i class="bi bi-plus-lg"></i> Create New Article
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <form action="" method="get" class="row g-2">
+        <div class="col-md-10">
+          {{ search_form.title|as_crispy_field }}
+        </div>
+        <div class="col-md-2 d-grid">
+          <button type="submit" class="btn btn-outline-primary">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for article in article_list %}
+      <div class="col-12 mb-3">
+        <div class="card border-0 shadow-sm h-100 hvr-shadow">
+          <div class="card-body p-4">
+            <div class="mb-2">
+              {% for topic in article.topics.all %}
+                <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill">
+                  {{ topic.name }}
+                </span>
+              {% endfor %}
+            </div>
+
+            <h2 class="h4 fw-bold">
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
+                {{ article.title }}
+              </a>
+            </h2>
+
+            <p class="text-muted">
+              {{ article.content|truncatewords:30 }}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+              <div class="small text-muted">
+                <i class="bi bi-people-fill me-1"></i>
+                {% for publisher in article.publishers.all %}
+                  <span class="fw-bold">{{ publisher.username }}</span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </div>
+              <div class="small text-muted">
+                <i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="text-center py-5">
+        <p class="text-muted fs-5">No articles found matching your criteria.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "includes/pagination.html" %}
+</div>
+{% endblock %}

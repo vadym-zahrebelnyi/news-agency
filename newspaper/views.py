@@ -8,9 +8,12 @@ from .models import Topic, Article
 
 from .forms import (
     TopicSearchForm,
+
     RedactorSearchForm,
     RedactorCreationForm,
     RedactorExperienceUpdateForm,
+
+    ArticleSearchForm, ArticleForm
 )
 
 
@@ -115,18 +118,14 @@ class RedactorDetailView(LoginRequiredMixin, generic.DetailView):
 class RedactorCreateView(LoginRequiredMixin, generic.CreateView):
     model = Redactor
     form_class = RedactorCreationForm
-    template_name = "newspaper/redactor_form.html"
-    # Після створення перекидаємо на список
     success_url = reverse_lazy("newspaper:redactor-list")
 
 
 class RedactorExperienceUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Redactor
     form_class = RedactorExperienceUpdateForm
-    template_name = "newspaper/redactor_form.html"
 
     def get_success_url(self):
-        # Після редагування краще повернути в профіль цього ж юзера
         return reverse_lazy("newspaper:redactor-detail", kwargs={"pk": self.object.pk})
 
 
@@ -134,3 +133,57 @@ class RedactorDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Redactor
     template_name = "newspaper/redactor_confirm_delete.html"
     success_url = reverse_lazy("newspaper:redactor-list")
+
+
+class ArticleListView(LoginRequiredMixin, generic.ListView):
+    model = Article
+    paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = self.request.GET.get("title", "")
+        context["search_form"] = ArticleSearchForm(
+            initial={"title": title}
+        )
+        return context
+
+    def get_queryset(self):
+        queryset = Article.objects.prefetch_related("topics", "publishers")
+        form = ArticleSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                title__icontains=form.cleaned_data["title"]
+            )
+        return queryset
+
+
+class ArticleDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Article
+    queryset = Article.objects.prefetch_related("topics", "publishers")
+
+
+class ArticleCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Article
+    form_class = ArticleForm
+    success_url = reverse_lazy("newspaper:article-list")
+
+    def form_valid(self, form):
+        article = form.save()
+        article.publishers.add(self.request.user)
+        return super(ArticleCreateView, self).form_valid(form)
+
+
+class ArticleUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Article
+    form_class = ArticleForm
+    success_url = reverse_lazy("newspaper:article-list")
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.publishers.add(self.request.user)
+        return super().form_valid(form)
+
+
+class ArticleDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Article
+    success_url = reverse_lazy("newspaper:article-list")

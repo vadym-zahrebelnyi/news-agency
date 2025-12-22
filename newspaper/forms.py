@@ -3,7 +3,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
 from .models import (
-    Redactor
+    Redactor,
+    Article,
+    Topic
 )
 
 class TopicSearchForm(forms.Form):
@@ -56,3 +58,23 @@ def validate_years_of_experience(years):
     if years > 50:
         raise ValidationError("Experience seems too high. Please check the value.")
     return years
+
+
+class ArticleSearchForm(forms.Form):
+    title = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(attrs={"placeholder": "Search by title..."})
+    )
+
+class ArticleForm(forms.ModelForm):
+    topics = forms.ModelMultipleChoiceField(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    class Meta:
+        model = Article
+        fields = ["title", "content", "topics"]

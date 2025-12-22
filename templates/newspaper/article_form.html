@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <h1 class="h3 fw-bold mb-4">
+        {% if object %} Edit Article: {{ object.title }} {% else %} Create New Article {% endif %}
+      </h1>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <form action="" method="post" novalidate>
+            {% csrf_token %}
+
+            {{ form.title|as_crispy_field }}
+            {{ form.content|as_crispy_field }}
+
+            <div class="mb-4">
+              <label class="form-label fw-bold">Select Topics:</label>
+              <div class="p-3 bg-light rounded border">
+                {{ form.topics|as_crispy_field }}
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary px-4 rounded-pill">
+                Save Article
+              </button>
+              <a href="{% url 'newspaper:article-list' %}" class="btn btn-outline-secondary px-4 rounded-pill">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
