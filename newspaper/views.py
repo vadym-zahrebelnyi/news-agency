@@ -55,7 +55,7 @@ class TopicListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        queryset = Topic.objects.all()
+        queryset = Topic.objects.annotate(num_articles=Count("articles"))
         form = TopicSearchForm(self.request.GET)
         if form.is_valid():
             return queryset.filter(
