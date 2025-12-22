@@ -117,7 +117,9 @@ class RedactorListView(LoginRequiredMixin, generic.ListView):
 
 class RedactorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Redactor
-    queryset = Redactor.objects.prefetch_related("articles__topics")
+    queryset = Redactor.objects.annotate(
+        num_articles=Count("articles")
+    ).prefetch_related("articles__topics")
 
 
 class RedactorCreateView(LoginRequiredMixin, generic.CreateView):
