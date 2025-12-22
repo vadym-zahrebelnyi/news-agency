@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count
 from django.views import generic
 from django.urls import reverse_lazy
@@ -128,18 +128,24 @@ class RedactorCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("newspaper:redactor-list")
 
 
-class RedactorExperienceUpdateView(LoginRequiredMixin, generic.UpdateView):
+class RedactorExperienceUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Redactor
     form_class = RedactorExperienceUpdateForm
 
     def get_success_url(self):
         return reverse_lazy("newspaper:redactor-detail", kwargs={"pk": self.object.pk})
 
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user == self.get_object()
 
-class RedactorDeleteView(LoginRequiredMixin, generic.DeleteView):
+
+class RedactorDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     model = Redactor
     template_name = "newspaper/redactor_confirm_delete.html"
     success_url = reverse_lazy("newspaper:redactor-list")
+
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user == self.get_object()
 
 
 class ArticleListView(LoginRequiredMixin, generic.ListView):
@@ -180,17 +186,22 @@ class ArticleCreateView(LoginRequiredMixin, generic.CreateView):
         return super(ArticleCreateView, self).form_valid(form)
 
 
-class ArticleUpdateView(LoginRequiredMixin, generic.UpdateView):
+class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Article
     form_class = ArticleForm
     success_url = reverse_lazy("newspaper:article-list")
 
+    def test_func(self):
+        return self.request.user in self.get_object().publishers.all()
+
     def form_valid(self, form):
         self.object = form.save()
-        self.object.publishers.add(self.request.user)
         return super().form_valid(form)
 
 
-class ArticleDeleteView(LoginRequiredMixin, generic.DeleteView):
+class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     model = Article
     success_url = reverse_lazy("newspaper:article-list")
+
+    def test_func(self):
+        return self.request.user in self.get_object().publishers.all()
