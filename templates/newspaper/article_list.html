@@ -2,71 +2,73 @@
 {% load crispy_forms_filters %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-2">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 fw-bold text-dark mb-0">Articles</h1>
-    <a href="{% url 'newspaper:article-create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
-      <i class="bi bi-plus-lg"></i> Create New Article
+    <h1 class="fw-bold h3 text-dark mb-0">Articles</h1>
+    <a href="{% url 'newspaper:article-create' %}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+      <i class="bi bi-plus-lg me-1"></i> Create New Article
     </a>
   </div>
 
   <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-      <form action="" method="get" class="row g-2">
-        <div class="col-md-10">
-          {{ search_form.title|as_crispy_field }}
+    <div class="card-body bg-light rounded-3 p-2 px-3">
+      <form method="get" action="" class="row g-2 align-items-center">
+        <div class="col-auto" style="min-width: 300px;">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search text-muted small"></i>
+            </span>
+            <input type="text" name="title" class="form-control border-start-0 px-2"
+                   placeholder="Search articles by title..." value="{{ request.GET.title|default:'' }}">
+          </div>
         </div>
-        <div class="col-md-2 d-grid">
-          <button type="submit" class="btn btn-outline-primary">Search</button>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-dark btn-sm px-4">Search</button>
+          {% if request.GET.title %}
+            <a href="{% url 'newspaper:article-list' %}" class="btn btn-link btn-sm text-decoration-none text-muted">Reset</a>
+          {% endif %}
         </div>
       </form>
     </div>
   </div>
 
   <div class="row">
-    {% for article in article_list %}
-      <div class="col-12 mb-3">
-        <div class="card border-0 shadow-sm h-100 hvr-shadow">
+    <div class="col-lg-12">
+      {% for article in article_list %}
+        <div class="card border-0 shadow-sm mb-3 hvr-shadow rounded-3">
           <div class="card-body p-4">
-            <div class="mb-2">
+            <h5 class="fw-bold mb-2">
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
+                {{ article.title }}
+              </a>
+            </h5>
+
+            <div class="mb-3">
               {% for topic in article.topics.all %}
-                <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill">
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill" style="font-size: 0.75rem;">
                   {{ topic.name }}
                 </span>
               {% endfor %}
             </div>
 
-            <h2 class="h4 fw-bold">
-              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
-                {{ article.title }}
-              </a>
-            </h2>
+            <p class="text-muted small mb-0">{{ article.content|truncatewords:20 }}</p>
 
-            <p class="text-muted">
-              {{ article.content|truncatewords:30 }}
-            </p>
-
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-              <div class="small text-muted">
-                <i class="bi bi-people-fill me-1"></i>
-                {% for publisher in article.publishers.all %}
-                  <span class="fw-bold">{{ publisher.username }}</span>{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-              </div>
-              <div class="small text-muted">
-                <i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}
-              </div>
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top small text-muted">
+              <span><i class="bi bi-person me-1"></i> {{ article.publishers.all|join:", " }}</span>
+              <span><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
             </div>
           </div>
         </div>
-      </div>
-    {% empty %}
-      <div class="text-center py-5">
-        <p class="text-muted fs-5">No articles found matching your criteria.</p>
-      </div>
-    {% endfor %}
+      {% empty %}
+        <div class="text-center py-5">
+          <p class="text-muted fs-5">No articles found matching your criteria.</p>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 
-  {% include "includes/pagination.html" %}
+  <div class="mt-4">
+    {% include "includes/pagination.html" %}
+  </div>
 </div>
 {% endblock %}
