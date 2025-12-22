@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container py-2">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="fw-bold h3 text-dark mb-0">Topics</h1>
     <a href="{% url 'newspaper:topic-create' %}" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm">
@@ -13,16 +14,17 @@
       <form method="get" action="" class="row g-2 align-items-center">
         <div class="col-auto" style="min-width: 250px;">
           <div class="input-group input-group-sm">
-            <span class="input-group-text bg-white border-end-0">
-              <i class="bi bi-search text-muted small"></i>
+            <span class="input-group-text bg-white border-end-0 text-muted">
+              <i class="bi bi-search small"></i>
             </span>
             <input type="text" name="name" class="form-control border-start-0 px-2"
-                   placeholder="Search topics..." value="{{ request.GET.name|default:'' }}">
+                   placeholder="Search topics..."
+                   value="{{ search_form.name.value|default:'' }}">
           </div>
         </div>
         <div class="col-auto">
           <button type="submit" class="btn btn-dark btn-sm px-3">Search</button>
-          {% if request.GET.name %}
+          {% if search_form.name.value %}
             <a href="{% url 'newspaper:topic-list' %}" class="btn btn-link btn-sm text-decoration-none text-muted">Reset</a>
           {% endif %}
         </div>
@@ -55,26 +57,19 @@
               </td>
               <td class="pe-4 text-end">
                 <div class="btn-group">
-                  <a href="{% url 'newspaper:topic-update' pk=topic.id %}" class="btn btn-sm btn-outline-secondary border-0 rounded-circle me-1" title="Edit">
-                    <i class="bi bi-pencil-square"></i>
-                  </a>
-                  <a href="{% url 'newspaper:topic-delete' pk=topic.id %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Delete">
-                    <i class="bi bi-trash"></i>
-                  </a>
+                  <a href="{% url 'newspaper:topic-update' pk=topic.id %}" class="btn btn-sm btn-outline-secondary border-0 rounded-circle me-1"><i class="bi bi-pencil-square"></i></a>
+                  <a href="{% url 'newspaper:topic-delete' pk=topic.id %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle"><i class="bi bi-trash"></i></a>
                 </div>
               </td>
             </tr>
           {% empty %}
-            <tr>
-              <td colspan="3" class="text-center py-5 text-muted">No topics found.</td>
-            </tr>
+            <tr><td colspan="3" class="text-center py-5 text-muted">No topics found.</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="mt-4">
-    {% include "includes/pagination.html" %}
-  </div>
+  {% include "includes/pagination.html" %}
+</div>
 {% endblock %}

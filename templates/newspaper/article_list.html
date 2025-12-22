@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load crispy_forms_filters %}
 
 {% block content %}
 <div class="container py-2">
@@ -15,16 +14,17 @@
       <form method="get" action="" class="row g-2 align-items-center">
         <div class="col-auto" style="min-width: 300px;">
           <div class="input-group input-group-sm">
-            <span class="input-group-text bg-white border-end-0">
-              <i class="bi bi-search text-muted small"></i>
+            <span class="input-group-text bg-white border-end-0 text-muted">
+              <i class="bi bi-search small"></i>
             </span>
             <input type="text" name="title" class="form-control border-start-0 px-2"
-                   placeholder="Search articles by title..." value="{{ request.GET.title|default:'' }}">
+                   placeholder="Search articles by title..."
+                   value="{{ search_form.title.value|default:'' }}">
           </div>
         </div>
         <div class="col-auto">
           <button type="submit" class="btn btn-dark btn-sm px-4">Search</button>
-          {% if request.GET.title %}
+          {% if search_form.title.value %}
             <a href="{% url 'newspaper:article-list' %}" class="btn btn-link btn-sm text-decoration-none text-muted">Reset</a>
           {% endif %}
         </div>
@@ -33,16 +33,15 @@
   </div>
 
   <div class="row">
-    <div class="col-lg-12">
-      {% for article in article_list %}
-        <div class="card border-0 shadow-sm mb-3 hvr-shadow rounded-3">
+    {% for article in article_list %}
+      <div class="col-12 mb-3">
+        <article class="card border-0 shadow-sm hvr-shadow rounded-3 bg-white">
           <div class="card-body p-4">
-            <h5 class="fw-bold mb-2">
+            <h2 class="h5 fw-bold mb-2">
               <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
                 {{ article.title }}
               </a>
-            </h5>
-
+            </h2>
             <div class="mb-3">
               {% for topic in article.topics.all %}
                 <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill" style="font-size: 0.75rem;">
@@ -50,25 +49,21 @@
                 </span>
               {% endfor %}
             </div>
-
             <p class="text-muted small mb-0">{{ article.content|truncatewords:20 }}</p>
-
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top small text-muted">
+            <footer class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top small text-muted">
               <span><i class="bi bi-person me-1"></i> {{ article.publishers.all|join:", " }}</span>
               <span><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
-            </div>
+            </footer>
           </div>
-        </div>
-      {% empty %}
-        <div class="text-center py-5">
-          <p class="text-muted fs-5">No articles found matching your criteria.</p>
-        </div>
-      {% endfor %}
-    </div>
+        </article>
+      </div>
+    {% empty %}
+      <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+        <p class="text-muted fs-5 mb-0">No articles found matching your criteria.</p>
+      </div>
+    {% endfor %}
   </div>
 
-  <div class="mt-4">
-    {% include "includes/pagination.html" %}
-  </div>
+  {% include "includes/pagination.html" %}
 </div>
 {% endblock %}
