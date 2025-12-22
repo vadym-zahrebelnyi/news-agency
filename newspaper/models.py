@@ -40,8 +40,7 @@ class Article(models.Model):
     published_date = models.DateTimeField(auto_now_add=True)
     topics = models.ManyToManyField(Topic, related_name="articles")
     publishers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="articles"
+        settings.AUTH_USER_MODEL, related_name="articles"
     )
 
     class Meta:

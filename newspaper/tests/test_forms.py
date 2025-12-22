@@ -11,7 +11,6 @@ from newspaper.models import Topic
 
 class SearchFormsTests(TestCase):
     def test_topic_search_form(self):
-        """Tests that the topic search form is valid with or without data."""
         form_empty = TopicSearchForm(data={})
         self.assertTrue(form_empty.is_valid())
         self.assertEqual(form_empty.cleaned_data, {"name": ""})
@@ -21,7 +20,6 @@ class SearchFormsTests(TestCase):
         self.assertEqual(form_with_data.cleaned_data, {"name": "Test"})
 
     def test_article_search_form(self):
-        """Tests that the article search form is valid with or without data."""
         form_empty = ArticleSearchForm(data={})
         self.assertTrue(form_empty.is_valid())
         self.assertEqual(form_empty.cleaned_data, {"title": ""})
@@ -33,7 +31,6 @@ class SearchFormsTests(TestCase):
 
 class RedactorFormsTests(TestCase):
     def test_redactor_creation_form_valid_experience(self):
-        """Tests the RedactorCreationForm with a valid years_of_experience value."""
         form_data = {
             "username": "test.user",
             "password1": "S0meC0mplexP@ssword!",
@@ -44,7 +41,6 @@ class RedactorFormsTests(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_redactor_creation_form_negative_experience_invalid(self):
-        """Tests that RedactorCreationForm raises a validation error for negative experience."""
         form_data = {
             "username": "test.user",
             "password1": "S0meC0mplexP@ssword!",
@@ -56,11 +52,10 @@ class RedactorFormsTests(TestCase):
         self.assertIn("years_of_experience", form.errors)
         self.assertEqual(
             form.errors["years_of_experience"][0],
-            "Ensure this value is greater than or equal to 0."
+            "Ensure this value is greater than or equal to 0.",
         )
 
     def test_redactor_creation_form_high_experience_invalid(self):
-        """Tests that RedactorCreationForm raises a validation error for excessive experience."""
         form_data = {
             "username": "test.user",
             "password1": "S0meC0mplexP@ssword!",
@@ -70,10 +65,12 @@ class RedactorFormsTests(TestCase):
         form = RedactorCreationForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("years_of_experience", form.errors)
-        self.assertEqual(form.errors["years_of_experience"][0], "Experience seems too high. Please check the value.")
+        self.assertEqual(
+            form.errors["years_of_experience"][0],
+            "Experience seems too high. Please check the value.",
+        )
 
     def test_redactor_experience_update_form_valid(self):
-        """Tests the RedactorExperienceUpdateForm with valid data."""
         form_data = {"years_of_experience": 20}
         form = RedactorExperienceUpdateForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -84,7 +81,6 @@ class ArticleFormTests(TestCase):
         self.topic = Topic.objects.create(name="Test Topic")
 
     def test_article_form_valid(self):
-        """Tests that the ArticleForm is valid with all required data."""
         form_data = {
             "title": "A Valid Title",
             "content": "Some valid content.",
@@ -94,7 +90,6 @@ class ArticleFormTests(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_article_form_missing_title_invalid(self):
-        """Tests that the ArticleForm is invalid if the title is missing."""
         form_data = {
             "content": "Content without a title.",
             "topics": [self.topic.id],

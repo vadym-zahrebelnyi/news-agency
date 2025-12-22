@@ -5,6 +5,7 @@ from .models import Topic, Article
 
 Redactor = get_user_model()
 
+
 @admin.register(Redactor)
 class RedactorAdmin(UserAdmin):
     list_display = UserAdmin.list_display + ("years_of_experience",)
@@ -20,9 +21,10 @@ class RedactorAdmin(UserAdmin):
                     "last_name",
                     "years_of_experience",
                 )
-            }
+            },
         ),
     )
+
 
 @admin.register(Article)
 class NewspaperAdmin(admin.ModelAdmin):
@@ -30,6 +32,7 @@ class NewspaperAdmin(admin.ModelAdmin):
     search_fields = ("title",)
     list_filter = ("topics", "published_date")
     filter_horizontal = ("topics", "publishers")
+
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):

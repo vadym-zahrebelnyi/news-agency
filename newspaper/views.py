@@ -8,16 +8,16 @@ from .models import Topic, Article
 
 from .forms import (
     TopicSearchForm,
-
     RedactorSearchForm,
     RedactorCreationForm,
     RedactorExperienceUpdateForm,
-
-    ArticleSearchForm, ArticleForm
+    ArticleSearchForm,
+    ArticleForm,
 )
 
 
 Redactor = get_user_model()
+
 
 class IndexView(generic.TemplateView):
     template_name = "newspaper/index.html"
@@ -29,23 +29,17 @@ class IndexView(generic.TemplateView):
         context["num_redactors"] = Redactor.objects.count()
         context["num_articles"] = Article.objects.count()
 
-        context["latest_articles"] = (
-            Article.objects
-            .prefetch_related("topics", "publishers")
-            .order_by("-published_date")[:5]
-        )
+        context["latest_articles"] = Article.objects.prefetch_related(
+            "topics", "publishers"
+        ).order_by("-published_date")[:5]
 
-        context["top_redactors"] = (
-            Redactor.objects
-            .annotate(num_papers=Count("articles"))
-            .order_by("-num_papers")[:3]
-        )
+        context["top_redactors"] = Redactor.objects.annotate(
+            num_papers=Count("articles")
+        ).order_by("-num_papers")[:3]
 
-        context["popular_topics"] = (
-            Topic.objects
-            .annotate(num_articles=Count("articles"))
-            .order_by("-num_articles")[:5]
-        )
+        context["popular_topics"] = Topic.objects.annotate(
+            num_articles=Count("articles")
+        ).order_by("-num_articles")[:5]
 
         return context
 
@@ -58,19 +52,13 @@ class TopicListView(LoginRequiredMixin, generic.ListView):
         queryset = Topic.objects.annotate(num_articles=Count("articles"))
         form = TopicSearchForm(self.request.GET)
         if form.is_valid():
-            return queryset.filter(
-                name__icontains=form.cleaned_data["name"]
-            )
+            return queryset.filter(name__icontains=form.cleaned_data["name"])
         return queryset
 
-    def get_context_data(
-            self, *, object_list=None, **kwargs
-    ):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super(TopicListView, self).get_context_data(**kwargs)
         name = self.request.GET.get("name", "")
-        context["search_form"] = TopicSearchForm(
-            initial={"name": name}
-        )
+        context["search_form"] = TopicSearchForm(initial={"name": name})
         return context
 
 
@@ -104,9 +92,7 @@ class RedactorListView(LoginRequiredMixin, generic.ListView):
             )
         return queryset
 
-    def get_context_data(
-            self, *, object_list=None, **kwargs
-    ):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super(RedactorListView, self).get_context_data(**kwargs)
         username = self.request.GET.get("username", "")
         context["search_form"] = RedactorSearchForm(
@@ -128,24 +114,36 @@ class RedactorCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("newspaper:redactor-list")
 
 
-class RedactorExperienceUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+class RedactorExperienceUpdateView(
+    LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
+):
     model = Redactor
     form_class = RedactorExperienceUpdateForm
 
     def get_success_url(self):
-        return reverse_lazy("newspaper:redactor-detail", kwargs={"pk": self.object.pk})
+        return reverse_lazy(
+            "newspaper:redactor-detail", kwargs={"pk": self.object.pk}
+        )
 
     def test_func(self):
-        return self.request.user.is_superuser or self.request.user == self.get_object()
+        return (
+            self.request.user.is_superuser
+            or self.request.user == self.get_object()
+        )
 
 
-class RedactorDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+class RedactorDeleteView(
+    LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView
+):
     model = Redactor
     template_name = "newspaper/redactor_confirm_delete.html"
     success_url = reverse_lazy("newspaper:redactor-list")
 
     def test_func(self):
-        return self.request.user.is_superuser or self.request.user == self.get_object()
+        return (
+            self.request.user.is_superuser
+            or self.request.user == self.get_object()
+        )
 
 
 class ArticleListView(LoginRequiredMixin, generic.ListView):
@@ -155,9 +153,7 @@ class ArticleListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         title = self.request.GET.get("title", "")
-        context["search_form"] = ArticleSearchForm(
-            initial={"title": title}
-        )
+        context["search_form"] = ArticleSearchForm(initial={"title": title})
         return context
 
     def get_queryset(self):
@@ -186,7 +182,9 @@ class ArticleCreateView(LoginRequiredMixin, generic.CreateView):
         return super(ArticleCreateView, self).form_valid(form)
 
 
-class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+class ArticleUpdateView(
+    LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
+):
     model = Article
     form_class = ArticleForm
     success_url = reverse_lazy("newspaper:article-list")
@@ -199,7 +197,9 @@ class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateV
         return super().form_valid(form)
 
 
-class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+class ArticleDeleteView(
+    LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView
+):
     model = Article
     success_url = reverse_lazy("newspaper:article-list")
 

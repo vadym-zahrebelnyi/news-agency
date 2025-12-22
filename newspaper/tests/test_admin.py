@@ -16,26 +16,19 @@ class AdminSiteTests(TestCase):
         )
 
     def test_redactor_years_of_experience_listed(self):
-        """
-        Tests that the 'years_of_experience' field is displayed on the redactor list page.
-        """
         url = reverse("admin:newspaper_redactor_changelist")
         response = self.client.get(url)
         self.assertContains(response, str(self.redactor.years_of_experience))
 
     def test_redactor_detail_years_of_experience_listed(self):
-        """
-        Tests that the 'years_of_experience' field is displayed on the redactor detail/change page.
-        """
-        url = reverse("admin:newspaper_redactor_change", args=[self.redactor.id])
+        url = reverse(
+            "admin:newspaper_redactor_change", args=[self.redactor.id]
+        )
         response = self.client.get(url)
-        self.assertContains(response, "years_of_experience")  # Check for the label
-        self.assertContains(response, self.redactor.years_of_experience)  # Check for the value
+        self.assertContains(response, "years_of_experience")
+        self.assertContains(response, self.redactor.years_of_experience)
 
     def test_redactor_create_years_of_experience_listed(self):
-        """
-        Tests that the 'years_of_experience' field is present on the redactor create page.
-        """
         url = reverse("admin:newspaper_redactor_add")
         response = self.client.get(url)
         self.assertContains(response, "years_of_experience")

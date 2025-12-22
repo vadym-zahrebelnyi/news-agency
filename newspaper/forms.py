@@ -3,10 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
-from .models import (
-    Article,
-    Topic
-)
+from .models import Article, Topic
 
 Redactor = get_user_model()
 
@@ -16,9 +13,7 @@ class TopicSearchForm(forms.Form):
         max_length=255,
         required=False,
         label="",
-        widget=forms.TextInput(
-            attrs={"placeholder": "Search by name"}
-        )
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"}),
     )
 
 
@@ -27,9 +22,7 @@ class RedactorSearchForm(forms.Form):
         max_length=255,
         required=False,
         label="",
-        widget=forms.TextInput(
-            attrs={"placeholder": "Search by username"}
-        )
+        widget=forms.TextInput(attrs={"placeholder": "Search by username"}),
     )
 
 
@@ -43,7 +36,9 @@ class RedactorCreationForm(UserCreationForm):
         )
 
     def clean_years_of_experience(self):
-        return validate_years_of_experience(self.cleaned_data["years_of_experience"])
+        return validate_years_of_experience(
+            self.cleaned_data["years_of_experience"]
+        )
 
 
 class RedactorExperienceUpdateForm(forms.ModelForm):
@@ -52,14 +47,18 @@ class RedactorExperienceUpdateForm(forms.ModelForm):
         fields = ["years_of_experience", "first_name", "last_name"]
 
     def clean_years_of_experience(self):
-        return validate_years_of_experience(self.cleaned_data["years_of_experience"])
+        return validate_years_of_experience(
+            self.cleaned_data["years_of_experience"]
+        )
 
 
 def validate_years_of_experience(years):
     if years < 0:
         raise ValidationError("Experience cannot be negative.")
     if years > 50:
-        raise ValidationError("Experience seems too high. Please check the value.")
+        raise ValidationError(
+            "Experience seems too high. Please check the value."
+        )
     return years
 
 
@@ -68,7 +67,7 @@ class ArticleSearchForm(forms.Form):
         max_length=255,
         required=False,
         label="",
-        widget=forms.TextInput(attrs={"placeholder": "Search by title..."})
+        widget=forms.TextInput(attrs={"placeholder": "Search by title..."}),
     )
 
 
@@ -77,20 +76,24 @@ class ArticleForm(forms.ModelForm):
         queryset=Topic.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
         required=False,
-        label="Select Topics"
+        label="Select Topics",
     )
 
     class Meta:
         model = Article
         fields = ["title", "content", "topics"]
         widgets = {
-            "title": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Enter article title..."
-            }),
-            "content": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 20,
-                "placeholder": "Write your content here..."
-            }),
+            "title": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter article title...",
+                }
+            ),
+            "content": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 20,
+                    "placeholder": "Write your content here...",
+                }
+            ),
         }
