@@ -96,7 +96,7 @@ class RedactorListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        queryset = Redactor.objects.all()
+        queryset = Redactor.objects.annotate(num_articles=Count("articles"))
         form = RedactorSearchForm(self.request.GET)
         if form.is_valid():
             return queryset.filter(
