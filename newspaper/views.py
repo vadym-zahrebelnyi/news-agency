@@ -19,7 +19,7 @@ from .forms import (
 
 Redactor = get_user_model()
 
-class IndexView(LoginRequiredMixin, generic.TemplateView):
+class IndexView(generic.TemplateView):
     template_name = "newspaper/index.html"
 
     def get_context_data(self, **kwargs):
@@ -31,15 +31,20 @@ class IndexView(LoginRequiredMixin, generic.TemplateView):
 
         context["latest_articles"] = (
             Article.objects
-            .only("title", "published_date")
-            .prefetch_related("topics")
+            .prefetch_related("topics", "publishers")
             .order_by("-published_date")[:5]
         )
+
         context["top_redactors"] = (
             Redactor.objects
-            .only("username", "first_name", "last_name")
             .annotate(num_papers=Count("articles"))
             .order_by("-num_papers")[:3]
+        )
+
+        context["popular_topics"] = (
+            Topic.objects
+            .annotate(num_articles=Count("articles"))
+            .order_by("-num_articles")[:5]
         )
 
         return context
