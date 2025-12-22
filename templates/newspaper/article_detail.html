@@ -6,40 +6,43 @@
     <div class="col-md-9">
 
       <div class="mb-4">
-        <a href="{% url 'newspaper:article-list' %}" class="btn btn-link text-decoration-none p-0 text-muted">
-          <i class="bi bi-arrow-left"></i> Back to articles
+        <a href="{% url 'newspaper:article-list' %}" class="btn btn-link text-decoration-none p-0 text-muted small">
+          <i class="bi bi-arrow-left me-1"></i> Back to articles
         </a>
       </div>
 
-      <article class="bg-white p-5 shadow-sm rounded border-0">
+      <article class="bg-white p-4 p-md-5 shadow-sm rounded-3 border-0">
         <div class="mb-3">
           {% for topic in article.topics.all %}
-            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">{{ topic.name }}</span>
+            <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill px-3 py-2" style="font-size: 0.75rem;">
+              {{ topic.name }}
+            </span>
           {% endfor %}
         </div>
 
-        <h1 class="display-5 fw-bold mb-3">{{ article.title }}</h1>
+        <h1 class="fw-bold text-dark mb-3">{{ article.title }}</h1>
 
-        <div class="d-flex align-items-center text-muted mb-4 pb-4 border-bottom small">
-          <span class="me-3"><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
-          <span>
-            <i class="bi bi-person-lines-fill me-1"></i>
-            Authors:
-            {% for publisher in article.publishers.all %}
-              <a href="{% url 'newspaper:redactor-detail' pk=publisher.id %}" class="text-dark fw-bold text-decoration-none">
-                {{ publisher.username }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-          </span>
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom small text-muted">
+          <div class="d-flex align-items-center">
+            <span>
+              <i class="bi bi-person me-1"></i>
+              {% for publisher in article.publishers.all %}
+                <a href="{% url 'newspaper:redactor-detail' pk=publisher.id %}" class="text-dark fw-bold text-decoration-none hvr-underline-from-left">
+                  {{ publisher.username }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </span>
+          </div>
+          <span><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
         </div>
 
-        <div class="article-body fs-5 lh-lg mb-5" style="white-space: pre-wrap;">
+        <div class="article-body lh-base mb-5 text-dark" style="white-space: pre-line; font-size: 1.1rem;">
           {{ article.content }}
         </div>
 
         <div class="d-flex gap-2 border-top pt-4">
           {% if user in article.publishers.all or user.is_superuser %}
-            <a href="{% url 'newspaper:article-update' pk=article.id %}" class="btn btn-warning px-4 rounded-pill">
-              <i class="bi bi-pencil-square me-1"></i> Edit
+            <a href="{% url 'newspaper:article-update' pk=article.id %}" class="btn btn-primary px-4 rounded-pill shadow-sm">
+              <i class="bi bi-pencil-square me-1"></i> Edit Article
             </a>
             <a href="{% url 'newspaper:article-delete' pk=article.id %}" class="btn btn-outline-danger px-4 rounded-pill">
               <i class="bi bi-trash me-1"></i> Delete
