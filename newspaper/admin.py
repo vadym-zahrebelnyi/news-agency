@@ -1,6 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
-from .models import Topic, Redactor, Article
+from .models import Topic, Article
+
+Redactor = get_user_model()
 
 @admin.register(Redactor)
 class RedactorAdmin(UserAdmin):
