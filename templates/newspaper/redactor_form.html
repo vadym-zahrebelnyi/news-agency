@@ -2,36 +2,33 @@
 {% load crispy_forms_filters %}
 
 {% block content %}
+<div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 border-bottom-0 text-center">
-          {% if object %}
-            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto my-3 shadow-sm"
-                 style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">
-              {{ object.username|slice:":2"|upper }}
-            </div>
-          {% endif %}
-          <h1 class="h4 mb-0 fw-bold">{{ object|yesno:"Update Profile,Create Redactor" }}</h1>
-          <p class="text-muted small">{% if object %}@{{ object.username }}{% else %}Add a new member to the agency{% endif %}</p>
-        </div>
 
-        <div class="card-body p-4 pt-0">
-          <form action="" method="post" novalidate>
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="fw-bold text-dark mb-4 h4 text-center">
+            {{ object|yesno:"Update,New" }} Profile
+          </h2>
+
+          <form method="post" novalidate>
             {% csrf_token %}
             {{ form|crispy }}
 
-            <div class="d-grid gap-2 mt-4">
-              <button type="submit" class="btn btn-primary px-4 shadow-sm">
-                <i class="bi bi-check-lg me-1"></i> Save Changes
+            <div class="d-grid gap-2 mt-5">
+              <button type="submit" class="btn btn-dark btn-sm rounded-pill px-4 py-2 shadow-sm fw-bold">
+                {{ object|yesno:"Save changes,Register" }}
               </button>
-              <a href="{% url 'newspaper:redactor-list' %}" class="btn btn-link text-muted btn-sm text-decoration-none">
-                Cancel and return
+              <a href="javascript:history.back()" class="btn btn-link text-decoration-none text-muted small text-center">
+                Cancel
               </a>
             </div>
           </form>
         </div>
       </div>
+
     </div>
   </div>
+</div>
 {% endblock %}

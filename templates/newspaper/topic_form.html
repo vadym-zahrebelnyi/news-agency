@@ -2,23 +2,33 @@
 {% load crispy_forms_filters %}
 
 {% block content %}
+<div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3">
-          <h1 class="h4 mb-0">{{ object|yesno:"Update,Create" }} Topic</h1>
-        </div>
+    <div class="col-md-5 col-lg-4">
+
+      <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
-          <form action="" method="post" novalidate>
+          <h2 class="fw-bold text-dark mb-4 h5 text-center">
+            {{ object|yesno:"Edit,Add" }} Topic
+          </h2>
+
+          <form method="post" novalidate>
             {% csrf_token %}
             {{ form|crispy }}
-            <div class="d-flex justify-content-between mt-4">
-              <a href="{% url 'newspaper:topic-list' %}" class="btn btn-outline-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary px-4">Save Topic</button>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-dark btn-sm rounded-pill px-4 py-2 shadow-sm fw-bold">
+                {{ object|yesno:"Update,Create" }}
+              </button>
+              <a href="javascript:history.back()" class="btn btn-link text-decoration-none text-muted small text-center">
+                Cancel
+              </a>
             </div>
           </form>
         </div>
       </div>
+
     </div>
   </div>
+</div>
 {% endblock %}

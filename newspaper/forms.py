@@ -68,13 +68,26 @@ class ArticleSearchForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Search by title..."})
     )
 
+
 class ArticleForm(forms.ModelForm):
     topics = forms.ModelMultipleChoiceField(
         queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
+        widget=forms.CheckboxSelectMultiple(),
+        required=False,
+        label="Select Topics"
     )
 
     class Meta:
         model = Article
         fields = ["title", "content", "topics"]
+        widgets = {
+            "title": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Enter article title..."
+            }),
+            "content": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 20,
+                "placeholder": "Write your content here..."
+            }),
+        }
