@@ -3,6 +3,8 @@
 ## 🚀 Project Overview
 A web-based platform designed for managing news articles, topics, and redactors. It provides a robust system for content creation, organization, and presentation.
 
+[News Agency Render Deploy](https://news-agency-lpk9.onrender.com)
+
 ## 🏗 Project Structure
 The application is organized into the following key components:
 
@@ -10,6 +12,8 @@ The application is organized into the following key components:
 *   **`newspaper/`**: The primary application housing the core business logic, including models (Articles, Topics, Redactors), views, forms, migrations, and template tags. It also includes management commands for seeding initial data.
 *   **`static/`**: Stores static assets like CSS files to control the application's appearance.
 *   **`templates/`**: Contains HTML templates organized by application (`newspaper`, `registration`) and reusable components (`includes`).
+
+![ERD](doc/erd.png)
 
 ## ✍️ Core Content Management Logic
 

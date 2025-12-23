@@ -11,12 +11,20 @@ TEST_ADMIN = {
     "username": "admin",
     "password": "StrongAdminPassword456",
     "is_staff": True,
-    "is_superuser": True
+    "is_superuser": True,
 }
 
 TEST_AUTHORS = [
-    {"username": "ivan_redactor", "password": "RedactorIvanPassword123", "years": 5},
-    {"username": "olga_news", "password": "RedactorOlgaPassword123", "years": 2},
+    {
+        "username": "ivan_redactor",
+        "password": "RedactorIvanPassword123",
+        "years": 5,
+    },
+    {
+        "username": "olga_news",
+        "password": "RedactorOlgaPassword123",
+        "years": 2,
+    },
 ]
 
 
@@ -35,7 +43,7 @@ class Command(BaseCommand):
             author = Redactor.objects.create_user(
                 username=data["username"],
                 password=data["password"],
-                years_of_experience=data["years"]
+                years_of_experience=data["years"],
             )
             authors.append(author)
 
@@ -45,7 +53,7 @@ class Command(BaseCommand):
                 password="FakePassword123",
                 first_name=fake.first_name(),
                 last_name=fake.last_name(),
-                years_of_experience=random.randint(0, 30)
+                years_of_experience=random.randint(0, 30),
             )
             authors.append(extra_author)
 
@@ -59,7 +67,7 @@ class Command(BaseCommand):
             "Culture",
             "Literature",
             "Movies",
-            "IT-Tech"
+            "IT-Tech",
         ]
         topics = [Topic.objects.create(name=name) for name in topics_list]
 
@@ -69,7 +77,9 @@ class Command(BaseCommand):
                 content="\n\n".join(fake.paragraphs(nb=5)),
             )
             article.topics.set(random.sample(topics, k=random.randint(1, 3)))
-            article.publishers.set(random.sample(authors, k=random.randint(1, 2)))
+            article.publishers.set(
+                random.sample(authors, k=random.randint(1, 2))
+            )
 
         self.stdout.write(self.style.SUCCESS("Database successfully seeded!"))
 
