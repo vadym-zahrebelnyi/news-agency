@@ -7,6 +7,7 @@ django-crispy-forms==2.5
 django-debug-toolbar==6.1.0
 Faker==39.0.0
 flake8==7.3.0
+gunicorn==23.0.0
 mccabe==0.7.0
 mypy_extensions==1.1.0
 packaging==25.0
