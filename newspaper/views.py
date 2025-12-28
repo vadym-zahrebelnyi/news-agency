@@ -197,6 +197,11 @@ class ArticleCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = ArticleForm
     success_url = reverse_lazy("newspaper:article-list")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         article = form.save()
         article.publishers.add(self.request.user)
@@ -211,7 +216,21 @@ class ArticleUpdateView(
     success_url = reverse_lazy("newspaper:article-list")
 
     def test_func(self):
-        return self.request.user in self.get_object().publishers.all()
+        cached_article = self.get_object()
+        return (
+            self.request.user.is_superuser
+            or self.request.user in cached_article.publishers.all()
+        )
+
+    def get_object(self, queryset=None):
+        if hasattr(self, 'cached_obj'):
+            return self.cached_obj
+        return super().get_object(queryset)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         self.object = form.save()
@@ -225,4 +244,7 @@ class ArticleDeleteView(
     success_url = reverse_lazy("newspaper:article-list")
 
     def test_func(self):
-        return self.request.user in self.get_object().publishers.all()
+        return (
+            self.request.user.is_superuser
+            or self.request.user in self.get_object().publishers.all()
+        )

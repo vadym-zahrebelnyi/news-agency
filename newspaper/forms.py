@@ -79,9 +79,16 @@ class ArticleForm(forms.ModelForm):
         label="Select Topics",
     )
 
+    publishers = forms.ModelMultipleChoiceField(
+        queryset=get_user_model().objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=False,
+        label="Co-authors (Admin only)",
+    )
+
     class Meta:
         model = Article
-        fields = ["title", "content", "topics"]
+        fields = ["title", "content", "topics", "publishers"]
         widgets = {
             "title": forms.TextInput(
                 attrs={
@@ -97,3 +104,22 @@ class ArticleForm(forms.ModelForm):
                 }
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+        can_edit_publishers = False
+
+        if user and user.is_authenticated:
+            if user.is_superuser:
+                can_edit_publishers = True
+            elif self.instance.pk:
+                can_edit_publishers = user in self.instance.publishers.all()
+
+            if field := self.fields.get("publishers"):
+                field.queryset = field.queryset.exclude(id=user.id)
+                field.label_from_instance = lambda obj: obj.username
+
+        if not can_edit_publishers:
+            del self.fields["publishers"]
