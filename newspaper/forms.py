@@ -41,10 +41,10 @@ class RedactorCreationForm(UserCreationForm):
         )
 
 
-class RedactorExperienceUpdateForm(forms.ModelForm):
+class RedactorUpdateForm(forms.ModelForm):
     class Meta:
         model = Redactor
-        fields = ["years_of_experience", "first_name", "last_name"]
+        fields = ["username","years_of_experience", "first_name", "last_name",]
 
     def clean_years_of_experience(self):
         return validate_years_of_experience(

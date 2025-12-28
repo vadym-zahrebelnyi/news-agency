@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count
 from django.views import generic
@@ -10,7 +10,7 @@ from .forms import (
     TopicSearchForm,
     RedactorSearchForm,
     RedactorCreationForm,
-    RedactorExperienceUpdateForm,
+    RedactorUpdateForm,
     ArticleSearchForm,
     ArticleForm,
 )
@@ -108,17 +108,38 @@ class RedactorDetailView(LoginRequiredMixin, generic.DetailView):
     ).prefetch_related("articles__topics")
 
 
-class RedactorCreateView(LoginRequiredMixin, generic.CreateView):
+class RedactorCreateView(UserPassesTestMixin, generic.CreateView):
     model = Redactor
     form_class = RedactorCreationForm
-    success_url = reverse_lazy("newspaper:redactor-list")
+
+    raise_exception = True
+
+    def get_success_url(self):
+        if self.request.user.is_superuser:
+            return reverse_lazy("newspaper:redactor-list")
+        return reverse_lazy("newspaper:index")
+
+    def test_func(self):
+        return (
+            not self.request.user.is_authenticated
+            or self.request.user.is_superuser
+        )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        if not self.request.user.is_authenticated:
+            user = form.instance
+            login(self.request, user)
+
+        return response
 
 
-class RedactorExperienceUpdateView(
+class RedactorUpdateView(
     LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView
 ):
     model = Redactor
-    form_class = RedactorExperienceUpdateForm
+    form_class = RedactorUpdateForm
 
     def get_success_url(self):
         return reverse_lazy(

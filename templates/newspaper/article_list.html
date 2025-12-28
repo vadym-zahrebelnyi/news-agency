@@ -37,9 +37,12 @@
       <div class="col-12 mb-3">
         <article class="card border-0 shadow-sm hvr-shadow rounded-3 bg-white">
           <div class="card-body p-4">
-            <h2 class="h5 fw-bold mb-2">
+            <h2 class="h5 fw-bold mb-2 d-flex justify-content-between">
               <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
                 {{ article.title }}
+              </a>
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                View Article
               </a>
             </h2>
             <div class="mb-3">

@@ -1,7 +1,7 @@
 from django.test import TestCase
 from newspaper.forms import (
     RedactorCreationForm,
-    RedactorExperienceUpdateForm,
+    RedactorUpdateForm,
     ArticleForm,
     TopicSearchForm,
     ArticleSearchForm,
@@ -72,7 +72,7 @@ class RedactorFormsTests(TestCase):
 
     def test_redactor_experience_update_form_valid(self):
         form_data = {"years_of_experience": 20}
-        form = RedactorExperienceUpdateForm(data=form_data)
+        form = RedactorUpdateForm(data=form_data)
         self.assertTrue(form.is_valid())
 
 

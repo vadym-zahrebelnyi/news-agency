@@ -51,9 +51,11 @@
     </aside>
 
     <main class="col-lg-8">
-      <h3 class="fw-bold h4 mb-4 text-dark d-flex align-items-center">
+      <h3 class="fw-bold h4 mb-4 text-dark d-flex align-items-center justify-content-between">
         Published Articles
-        <span class="badge bg-dark ms-2 rounded-pill" style="font-size: 0.8rem;">{{ redactor.num_articles }}</span>
+        <a href="{% url 'newspaper:article-create' %}" class="btn btn-dark rounded-pill px-4 shadow-sm">
+          <i class="bi bi-plus-circle me-2"></i>New Article
+        </a>
       </h3>
 
       {% for article in redactor.articles.all %}

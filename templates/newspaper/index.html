@@ -49,10 +49,14 @@
       {% for article in latest_articles %}
         <div class="card border-0 shadow-sm mb-3 hvr-shadow rounded-3">
           <div class="card-body p-4">
-            <h5 class="fw-bold mb-2">
+            <h5 class="fw-bold mb-2 d-flex justify-content-between">
               <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
                 {{ article.title }}
               </a>
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                View Article
+              </a>
+
             </h5>
 
             <div class="mb-3">

@@ -8,7 +8,7 @@ from .views import (
     RedactorListView,
     RedactorDetailView,
     RedactorCreateView,
-    RedactorExperienceUpdateView,
+    RedactorUpdateView,
     RedactorDeleteView,
     ArticleListView,
     ArticleDetailView,
@@ -45,7 +45,7 @@ urlpatterns = [
     ),
     path(
         "redactors/<int:pk>/update/",
-        RedactorExperienceUpdateView.as_view(),
+        RedactorUpdateView.as_view(),
         name="redactor-update",
     ),
     path(
