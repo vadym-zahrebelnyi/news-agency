@@ -223,6 +223,7 @@ class RedactorViewTests(TestCase):
         self.client.force_login(self.user)
 
     def test_redactor_create_view(self):
+        self.client.logout()  # Ensure the client is not authenticated
         initial_count = Redactor.objects.count()
         form_data = {
             "username": "new.redactor",
@@ -233,11 +234,18 @@ class RedactorViewTests(TestCase):
         response = self.client.post(
             reverse("newspaper:redactor-create"), data=form_data
         )
-        self.assertRedirects(response, reverse("newspaper:redactor-list"))
+        self.assertRedirects(
+            response, reverse("newspaper:index")
+        )  # Should redirect to index page after successful creation and login
         self.assertEqual(Redactor.objects.count(), initial_count + 1)
 
     def test_user_can_update_own_experience(self):
-        form_data = {"years_of_experience": 3}
+        form_data = {
+            "username": self.user.username,
+            "first_name": self.user.first_name,
+            "last_name": self.user.last_name,
+            "years_of_experience": 3
+        }
         response = self.client.post(
             reverse("newspaper:redactor-update", kwargs={"pk": self.user.id}),
             data=form_data,
@@ -259,7 +267,12 @@ class RedactorViewTests(TestCase):
 
     def test_admin_can_update_other_user_experience(self):
         self.client.force_login(self.admin_user)
-        form_data = {"years_of_experience": 7}
+        form_data = {
+            "username": self.other_user.username,
+            "first_name": self.other_user.first_name,
+            "last_name": self.other_user.last_name,
+            "years_of_experience": 7
+        }
         response = self.client.post(
             reverse(
                 "newspaper:redactor-update", kwargs={"pk": self.other_user.id}

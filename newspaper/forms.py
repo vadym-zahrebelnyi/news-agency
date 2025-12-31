@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import ValidationError
 
 from .models import Article, Topic
 
@@ -80,7 +79,9 @@ class ArticleForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 20,
-                    "placeholder": "Write your content here...",
+                    "placeholder": (
+                        "Write your content here..."
+                    ),
                 }
             ),
         }

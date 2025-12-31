@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -39,6 +40,17 @@ class RedactorModelTests(TestCase):
             username="new.user", password="password123"
         )
         self.assertEqual(new_redactor.years_of_experience, 0)
+
+    def test_years_of_experience_max_value(self):
+        redactor = get_user_model()(
+            username="high.experience",
+            password="password123",
+            years_of_experience=51,
+        )
+        with self.assertRaisesMessage(
+            ValidationError, "Ensure this value is less than or equal to 50."
+        ):
+            redactor.full_clean()
 
 
 class ArticleModelTests(TestCase):

@@ -55,23 +55,13 @@ class RedactorFormsTests(TestCase):
             "Ensure this value is greater than or equal to 0.",
         )
 
-    def test_redactor_creation_form_high_experience_invalid(self):
+    def test_redactor_update_form_valid(self):
         form_data = {
-            "username": "test.user",
-            "password1": "S0meC0mplexP@ssword!",
-            "password2": "S0meC0mplexP@ssword!",
-            "years_of_experience": 100,
+            "username": "test_user",
+            "years_of_experience": 20,
+            "first_name": "Test",
+            "last_name": "User",
         }
-        form = RedactorCreationForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        self.assertIn("years_of_experience", form.errors)
-        self.assertEqual(
-            form.errors["years_of_experience"][0],
-            "Experience seems too high. Please check the value.",
-        )
-
-    def test_redactor_experience_update_form_valid(self):
-        form_data = {"years_of_experience": 20}
         form = RedactorUpdateForm(data=form_data)
         self.assertTrue(form.is_valid())
 
