@@ -35,31 +35,11 @@ class RedactorCreationForm(UserCreationForm):
             "last_name",
         )
 
-    def clean_years_of_experience(self):
-        return validate_years_of_experience(
-            self.cleaned_data["years_of_experience"]
-        )
-
 
 class RedactorUpdateForm(forms.ModelForm):
     class Meta:
         model = Redactor
-        fields = ["username","years_of_experience", "first_name", "last_name",]
-
-    def clean_years_of_experience(self):
-        return validate_years_of_experience(
-            self.cleaned_data["years_of_experience"]
-        )
-
-
-def validate_years_of_experience(years):
-    if years < 0:
-        raise ValidationError("Experience cannot be negative.")
-    if years > 50:
-        raise ValidationError(
-            "Experience seems too high. Please check the value."
-        )
-    return years
+        fields = ["username", "years_of_experience", "first_name", "last_name",]
 
 
 class ArticleSearchForm(forms.Form):
@@ -80,7 +60,7 @@ class ArticleForm(forms.ModelForm):
     )
 
     publishers = forms.ModelMultipleChoiceField(
-        queryset=get_user_model().objects.all(),
+        queryset=Redactor.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
         required=False,
         label="Co-authors (Admin only)",

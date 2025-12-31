@@ -203,9 +203,9 @@ class ArticleCreateView(LoginRequiredMixin, generic.CreateView):
         return kwargs
 
     def form_valid(self, form):
-        article = form.save()
-        article.publishers.add(self.request.user)
-        return super(ArticleCreateView, self).form_valid(form)
+        response = super().form_valid(form)
+        self.object.publishers.add(self.request.user)
+        return response
 
 
 class ArticleUpdateView(
@@ -233,8 +233,9 @@ class ArticleUpdateView(
         return kwargs
 
     def form_valid(self, form):
-        self.object = form.save()
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        self.object.publishers.add(self.request.user)
+        return response
 
 
 class ArticleDeleteView(

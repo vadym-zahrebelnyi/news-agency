@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import Index
 from django.urls import reverse
@@ -21,7 +22,9 @@ class Topic(models.Model):
 
 
 class Redactor(AbstractUser):
-    years_of_experience = models.PositiveIntegerField(default=0)
+    years_of_experience = models.PositiveIntegerField(
+        default=0, validators=[MaxValueValidator(50)]
+    )
 
     class Meta:
         verbose_name = "redactor"
@@ -46,7 +49,6 @@ class Article(models.Model):
     class Meta:
         ordering = ["-published_date"]
         indexes = [
-            Index(fields=["title"], name="newspaper_title_idx"),
             Index(fields=["published_date"], name="newspaper_pub_date_idx"),
         ]
 
