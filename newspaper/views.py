@@ -49,7 +49,7 @@ class TopicListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        queryset = Topic.objects.annotate(num_articles=Count("articles"))
+        queryset = Topic.objects.annotate(num_articles=Count("articles")).order_by("name")
         form = TopicSearchForm(self.request.GET)
         if form.is_valid():
             return queryset.filter(name__icontains=form.cleaned_data["name"])
@@ -103,9 +103,9 @@ class RedactorListView(LoginRequiredMixin, generic.ListView):
 
 class RedactorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Redactor
-    queryset = Redactor.objects.annotate(
+    queryset = Redactor.objects.select_related().annotate(
         num_articles=Count("articles")
-    ).prefetch_related("articles__topics")
+    ).prefetch_related("articles__topics", "articles__publishers")
 
 
 class RedactorCreateView(UserPassesTestMixin, generic.CreateView):
@@ -215,17 +215,19 @@ class ArticleUpdateView(
     form_class = ArticleForm
     success_url = reverse_lazy("newspaper:article-list")
 
-    def test_func(self):
-        cached_article = self.get_object()
-        return (
-            self.request.user.is_superuser
-            or self.request.user in cached_article.publishers.all()
-        )
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("publishers", "topics")
 
     def get_object(self, queryset=None):
-        if hasattr(self, 'cached_obj'):
-            return self.cached_obj
-        return super().get_object(queryset)
+        if not hasattr(self, "_cached_object"):
+            self._cached_object = super().get_object(queryset)
+        return self._cached_object
+
+    def test_func(self):
+        return (
+            self.request.user.is_superuser
+            or self.request.user in self.get_object().publishers.all()
+        )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -243,6 +245,14 @@ class ArticleDeleteView(
 ):
     model = Article
     success_url = reverse_lazy("newspaper:article-list")
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("publishers")
+
+    def get_object(self, queryset=None):
+        if not hasattr(self, "_cached_object"):
+            self._cached_object = super().get_object(queryset)
+        return self._cached_object
 
     def test_func(self):
         return (
