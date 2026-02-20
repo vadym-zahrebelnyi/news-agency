@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="fw-bold text-dark mb-4 h4 text-center">
+            {{ object|yesno:"Update,New" }} Profile
+          </h2>
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <div class="d-grid gap-2 mt-5">
+              <button type="submit" class="btn btn-dark btn-sm rounded-pill px-4 py-2 shadow-sm fw-bold">
+                {{ object|yesno:"Save changes,Register" }}
+              </button>
+              <a href="javascript:history.back()" class="btn btn-link text-decoration-none text-muted small text-center">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

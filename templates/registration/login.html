@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+
+      <div class="card border-0 shadow-sm rounded-3 px-3 py-4">
+        <div class="card-body">
+          <h2 class="fw-bold h4 mb-4 text-center">Login</h2>
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            {{ form|crispy }}
+
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-dark btn-sm rounded-pill py-2 fw-bold shadow-sm">
+                Sign In
+              </button>
+            </div>
+          </form>
+
+          {% if form.errors %}
+            <p class="text-danger small text-center mt-3 mb-0">
+              Invalid username or password.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{% url 'newspaper:redactor-create' %}" class="text-muted small text-decoration-none">
+          Don't have an account? <span class="text-dark fw-bold">Register</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+

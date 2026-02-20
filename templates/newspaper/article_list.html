@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-2">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold h3 text-dark mb-0">Articles</h1>
+    <a href="{% url 'newspaper:article-create' %}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+      <i class="bi bi-plus-lg me-1"></i> Create New Article
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-light rounded-3 p-2 px-3">
+      <form method="get" action="" class="row g-2 align-items-center">
+        <div class="col-auto" style="min-width: 300px;">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-white border-end-0 text-muted">
+              <i class="bi bi-search small"></i>
+            </span>
+            <input type="text" name="title" class="form-control border-start-0 px-2"
+                   placeholder="Search articles by title..."
+                   value="{{ search_form.title.value|default:'' }}">
+          </div>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-dark btn-sm px-4">Search</button>
+          {% if search_form.title.value %}
+            <a href="{% url 'newspaper:article-list' %}" class="btn btn-link btn-sm text-decoration-none text-muted">Reset</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for article in article_list %}
+      <div class="col-12 mb-3">
+        <article class="card border-0 shadow-sm hvr-shadow rounded-3 bg-white">
+          <div class="card-body p-4">
+            <h2 class="h5 fw-bold mb-2 d-flex justify-content-between">
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
+                {{ article.title }}
+              </a>
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                View Article
+              </a>
+            </h2>
+            <div class="mb-3">
+              {% for topic in article.topics.all %}
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill" style="font-size: 0.75rem;">
+                  {{ topic.name }}
+                </span>
+              {% endfor %}
+            </div>
+            <p class="text-muted small mb-0">{{ article.content|truncatewords:20 }}</p>
+            <footer class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top small text-muted">
+              <span><i class="bi bi-person me-1"></i> {{ article.publishers.all|join:", " }}</span>
+              <span><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
+            </footer>
+          </div>
+        </article>
+      </div>
+    {% empty %}
+      <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+        <p class="text-muted fs-5 mb-0">No articles found matching your criteria.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

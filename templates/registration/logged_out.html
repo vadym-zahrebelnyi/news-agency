@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+      <div class="mb-4">
+        <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+      </div>
+
+      <h2 class="fw-bold text-dark mb-3">You have been logged out</h2>
+      <p class="text-muted mb-4">
+        Thank you for your work today. Your session has been securely closed.
+      </p>
+
+      <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+        <a href="{% url 'newspaper:index' %}" class="btn btn-outline-secondary rounded-pill px-4">
+          <i class="bi bi-house-door me-1"></i> Home
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-dark rounded-pill px-4">
+          <i class="bi bi-box-arrow-in-right me-1"></i> Log In Again
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container-fluid py-4 px-md-5">
+  <div class="row justify-content-center">
+    <div class="col-xl-11">
+
+      <div class="mb-4">
+        <h1 class="fw-bold h3 text-dark">
+          {{ object|yesno:"Edit Article,Create New Article" }}
+        </h1>
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="row g-4">
+          <div class="col-lg-9">
+            <div class="card border-0 shadow-sm rounded-3">
+              <div class="card-body p-4">
+                {{ form.title|as_crispy_field }}
+                {{ form.content|as_crispy_field }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3">
+            <div class="sticky-top" style="top: 20px;">
+              <div class="card border-0 shadow-sm rounded-3 mb-3">
+                <div class="card-body p-4">
+
+                  <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted text-uppercase mb-2">Topics</label>
+                    <div class="d-flex flex-wrap gap-2">
+                      {% for check in form.topics %}
+                        <div class="form-check form-check-inline m-0 p-0">
+                          <input class="btn-check" type="checkbox" name="{{ check.data.name }}"
+                                 value="{{ check.data.value }}" id="{{ check.id_for_label }}"
+                                 {% if check.data.selected %}checked{% endif %}>
+                          <label class="btn btn-outline-warning btn-sm rounded-pill px-3 fw-bold" for="{{ check.id_for_label }}">
+                            {{ check.choice_label }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  {% if form.publishers %}
+                    <hr class="text-muted opacity-25 mb-4">
+                    <div class="mb-4">
+                      <label class="form-label fw-bold small text-muted text-uppercase mb-2">Co-authors</label>
+                      <div class="publishers-scroll" style="max-height: 200px; overflow-y: auto;">
+                        {% for check in form.publishers %}
+                          <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="{{ check.data.name }}"
+                                   value="{{ check.data.value }}" id="{{ check.id_for_label }}"
+                                   {% if check.data.selected %}checked{% endif %}>
+                            <label class="form-check-label small text-dark" for="{{ check.id_for_label }}">
+                              @{{ check.choice_label }}
+                            </label>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endif %}
+
+                  <hr class="text-muted opacity-25 mb-4">
+
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-dark btn-sm rounded-pill px-4 py-2 shadow-sm fw-bold">
+                      {{ object|yesno:"Save changes,Create Article" }}
+                    </button>
+
+                    <a href="javascript:history.back()" class="btn btn-link text-decoration-none text-muted small mt-1 text-center">
+                      Cancel
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="px-3">
+                <p class="text-muted mb-0" style="font-size: 0.75rem;">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Your article will be published immediately.
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

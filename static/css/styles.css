@@ -1,0 +1,30 @@
+body {
+    background-color: #fcfcfc;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.navbar {
+    border-bottom: 1px solid #eee;
+}
+
+.card {
+    border: none;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.footer {
+    padding: 2rem 0;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row">
+
+    <aside class="col-lg-4 mb-4">
+      <div class="mb-4">
+        <a href="{% url 'newspaper:redactor-list' %}" class="btn btn-link text-decoration-none p-0 text-muted small hvr-backward">
+          <i class="bi bi-arrow-left me-1"></i> Back to redactors
+        </a>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-3 bg-white sticky-top" style="top: 100px;">
+        <div class="card-body p-4 text-center">
+          <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-success-subtle mx-auto mb-3"
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-person-fill fs-1"></i>
+          </div>
+
+          <h1 class="fw-bold h4 text-dark mb-1">@{{ redactor.username }}</h1>
+          <p class="text-muted small mb-4">{{ redactor.first_name }} {{ redactor.last_name }}</p>
+
+          <div class="row g-2 mb-4">
+            <div class="col-6">
+              <div class="p-2 bg-light rounded-3 border-0">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Experience</small>
+                <span class="text-success fw-bold small">{{ redactor.years_of_experience }} yrs</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 bg-light rounded-3 border-0">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.6rem;">Articles</small>
+                <span class="text-dark fw-bold small">{{ redactor.num_articles }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            {% if user.id == redactor.id or user.is_superuser %}
+              <a href="{% url 'newspaper:redactor-update' pk=redactor.id %}" class="btn btn-success btn-sm rounded-pill shadow-sm py-2">
+                <i class="bi bi-pencil-square me-1"></i> Edit Profile
+              </a>
+              <a href="{% url 'newspaper:redactor-delete' pk=redactor.id %}" class="btn btn-outline-danger btn-sm rounded-pill py-2">
+                <i class="bi bi-trash me-1"></i> Delete Account
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="col-lg-8">
+      <h3 class="fw-bold h4 mb-4 text-dark d-flex align-items-center justify-content-between">
+        Published Articles
+        <a href="{% url 'newspaper:article-create' %}" class="btn btn-dark rounded-pill px-4 shadow-sm">
+          <i class="bi bi-plus-circle me-2"></i>New Article
+        </a>
+      </h3>
+
+      {% for article in redactor.articles.all %}
+        <article class="card border-0 shadow-sm mb-3 hvr-shadow rounded-3 bg-white">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-2 d-flex justify-content-between">
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
+                {{ article.title }}
+              </a>
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                View Article
+              </a>
+
+            </h5>
+
+            <div class="mb-3">
+              {% for topic in article.topics.all %}
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill" style="font-size: 0.75rem;">
+                  {{ topic.name }}
+                </span>
+              {% endfor %}
+            </div>
+
+            <p class="text-muted small mb-0">{{ article.content|truncatewords:25 }}</p>
+
+            <div class="d-flex justify-content-end mt-3 pt-3 border-top small text-muted">
+              <span><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-body text-center py-5">
+            <i class="bi bi-journal-x display-4 text-muted d-block mb-3"></i>
+            <p class="text-muted mb-0 fs-5">No articles have been published by this author yet.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </main>
+
+  </div>
+</div>
+{% endblock %}

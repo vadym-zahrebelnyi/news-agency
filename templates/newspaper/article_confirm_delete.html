@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 text-center">
+      <div class="card shadow-sm border-0 py-4 rounded-3">
+        <div class="card-body">
+          <i class="bi bi-file-earmark-x text-danger mb-3" style="font-size: 3.5rem;"></i>
+          <h2 class="h4 fw-bold">Delete Article?</h2>
+          <p class="text-muted px-3">
+            Are you sure you want to delete: <strong>{{ object.title }}</strong>?
+          </p>
+
+          <form action="" method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+              <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm fw-bold">
+                Yes, Delete
+              </button>
+              <a href="{% url 'newspaper:article-detail' pk=object.id %}" class="btn btn-light px-4 rounded-pill border">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card border-0 shadow-sm bg-white rounded-4 mb-5 overflow-hidden">
+    <div class="card-body p-4 p-md-5">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <h1 class="display-6 fw-bold text-dark mb-3">News Agency Dashboard</h1>
+          <p class="lead text-muted mb-4">
+            Welcome back! Manage your agency's pulse and stories in one place.
+          </p>
+          <a href="{% url 'newspaper:article-create' %}" class="btn btn-dark rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>New Article
+          </a>
+        </div>
+
+        <div class="col-lg-5 mt-4 mt-lg-0">
+          <div class="d-flex flex-column gap-3 ps-lg-4">
+            <div class="d-flex align-items-center p-2 px-4 bg-primary-subtle rounded-pill border border-primary-subtle shadow-sm">
+              <i class="bi bi-journal-text text-primary fs-4 me-3"></i>
+              <div>
+                <span class="fw-bold d-block lh-1 text-primary">{{ num_articles }}</span>
+                <small class="text-primary-emphasis text-uppercase fw-bold" style="font-size: 0.65rem;">Articles</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center p-2 px-4 bg-success-subtle rounded-pill border border-success-subtle shadow-sm">
+              <i class="bi bi-people text-success fs-4 me-3"></i>
+              <div>
+                <span class="fw-bold d-block lh-1 text-success">{{ num_redactors }}</span>
+                <small class="text-success-emphasis text-uppercase fw-bold" style="font-size: 0.65rem;">Redactors</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center p-2 px-4 bg-warning-subtle rounded-pill border border-warning-subtle shadow-sm">
+              <i class="bi bi-hash text-warning-emphasis fs-4 me-3"></i>
+              <div>
+                <span class="fw-bold d-block lh-1 text-warning-emphasis">{{ num_topics }}</span>
+                <small class="text-warning-emphasis text-uppercase fw-bold" style="font-size: 0.65rem;">Topics</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h3 class="fw-bold h4 mb-4">Latest Stories</h3>
+      {% for article in latest_articles %}
+        <div class="card border-0 shadow-sm mb-3 hvr-shadow rounded-3">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-2 d-flex justify-content-between">
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="text-decoration-none text-dark">
+                {{ article.title }}
+              </a>
+              <a href="{% url 'newspaper:article-detail' pk=article.id %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                View Article
+              </a>
+
+            </h5>
+
+            <div class="mb-3">
+              {% for topic in article.topics.all %}
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill" style="font-size: 0.75rem;">
+                  {{ topic.name }}
+                </span>
+              {% endfor %}
+            </div>
+
+            <p class="text-muted small mb-0">{{ article.content|truncatewords:20 }}</p>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top small text-muted">
+              <span><i class="bi bi-person me-1"></i> {{ article.publishers.all|join:", " }}</span>
+              <span><i class="bi bi-calendar3 me-1"></i> {{ article.published_date|date:"d M Y" }}</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="col-lg-4">
+      <h3 class="fw-bold h4 mb-4">Trending</h3>
+
+      <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3">Popular Topics</h6>
+          <div class="d-flex flex-wrap gap-2">
+            {% for topic in popular_topics %}
+              <a href="{% url 'newspaper:topic-list' %}?name={{ topic.name }}"
+                 class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle text-decoration-none rounded-pill px-3 py-2 small hvr-shadow fw-bold">
+                {{ topic.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3">Top Contributors</h6>
+          {% for redactor in top_redactors %}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <a href="{% url 'newspaper:redactor-detail' pk=redactor.id %}" class="text-decoration-none text-dark small fw-semibold">
+                @{{ redactor.username }}
+              </a>
+              <span class="badge bg-success-subtle text-success rounded-pill border border-success-subtle px-2">
+                {{ redactor.num_papers }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
